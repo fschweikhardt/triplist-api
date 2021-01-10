@@ -14,3 +14,5 @@ ListsRouter
             })
             .catch(next)
     })
+
+module.exports = ListsRouter
