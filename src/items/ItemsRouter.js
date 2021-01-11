@@ -15,8 +15,8 @@ ItemsRouter
             .catch(next)
     })
     .post(bodyParser, (req,res,next) => {
-        const { name, listid } = req.body
-        const newItem = { name, listid }
+        const { name, list_id } = req.body
+        const newItem = { name, list_id }
         ItemsService.addItem(req.app.get('db'), newItem)
             .then(data => {
                 res.json(data).status(201)
@@ -25,7 +25,7 @@ ItemsRouter
     })
     .delete(bodyParser, (req,res,next) => {
         const { id } = req.body
-        const item = id 
+        const item = id  
         ItemsService.deleteItem(req.app.get('db'), item )
         .then(numRowsAffected => {
             res.status(204).end()

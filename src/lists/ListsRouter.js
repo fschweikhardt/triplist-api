@@ -15,8 +15,8 @@ ListsRouter
             .catch(next)
     })
     .post(bodyParser, (req,res,next) => {
-        const { title } = req.body
-        const newList = { title }
+        const { title, user_id } = req.body
+        const newList = { title, user_id }
         ListsService.addList(req.app.get('db'), newList)
             .then(data => {
                 res.json(data).status(201)
