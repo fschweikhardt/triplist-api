@@ -14,5 +14,13 @@ UsersRouter
             })
             .catch(next)
     })
+    .get(bodyParser, (req,res,next) => {
+        const { id } = req.body
+        UsersService.getUser(req.app.get('db'), id)
+            .then(data => {
+                res.json(data)
+            })
+            .catch(next)
+    })
 
 module.exports = UsersRouter
