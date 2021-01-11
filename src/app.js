@@ -10,6 +10,7 @@ const {CLIENT_ORIGIN} = require('./config');
 //const validateBearerToken = require('./validate-bearer-token')
 const ListsRouter = require('./lists/ListsRouter')
 const ItemsRouter = require('./items/ItemsRouter')
+const UsersRouter = require('./users/UsersRouter')
 
 
 const app = express()
@@ -30,6 +31,7 @@ app.use(
 
 app.use(ListsRouter)
 app.use(ItemsRouter) 
+app.use(UsersRouter)
 
 app.get('/api', (req, res) => {
   res.send('Hello, API!')
