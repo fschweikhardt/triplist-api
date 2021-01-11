@@ -29,7 +29,7 @@ app.use(
 //app.use(validateBearerToken)
 
 app.use(ListsRouter)
-app.use(ItemsRouter)
+app.use(ItemsRouter) 
 
 app.get('/api', (req, res) => {
   res.send('Hello, API!')

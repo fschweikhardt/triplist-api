@@ -14,5 +14,23 @@ ItemsRouter
             })
             .catch(next)
     })
+    .post(bodyParser, (req,res,next) => {
+        const { name, listid } = req.body
+        const newItem = { name, listid }
+        ItemsService.addItem(req.app.get('db'), newItem)
+            .then(data => {
+                res.json(data).status(201)
+            })
+            .catch(next)
+    })
+    .delete(bodyParser, (req,res,next) => {
+        const { id } = req.body
+        const item = id 
+        ItemsService.deleteItem(req.app.get('db'), item )
+        .then(numRowsAffected => {
+            res.status(204).end()
+        })
+        .catch(next)
+    })
 
 module.exports = ItemsRouter

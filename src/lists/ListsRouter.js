@@ -14,5 +14,23 @@ ListsRouter
             })
             .catch(next)
     })
+    .post(bodyParser, (req,res,next) => {
+        const { title } = req.body
+        const newList = { title }
+        ListsService.addList(req.app.get('db'), newList)
+            .then(data => {
+                res.json(data).status(201)
+            })
+            .catch(next)
+    })
+    .delete(bodyParser, (req,res,next) => {
+        const { id } = req.body
+        const list = id 
+        ListsService.deleteList(req.app.get('db'), list)
+        .then(numRowsAffected => {
+            res.status(204).end()
+        })
+        .catch(next)
+    })
 
 module.exports = ListsRouter
