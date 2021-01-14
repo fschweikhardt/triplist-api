@@ -37,7 +37,7 @@ UsersRouter
 UsersRouter
     .route('/api/userLists')
     .post(bodyParser, (req,res,next) => {
-        const { username, password } = req.body
+        const { username } = req.body
         UsersService.seedUserLists(req.app.get('db'), username)
             .then(user => {
                 res.json(user).status(201)
