@@ -65,6 +65,10 @@ UsersRouter
     .post(bodyParser, (req,res,next) => {
         const { email, username, password } = req.body
         const new_user = { email, username, password }
+        //check is username exists
+        //const check = req.app.get('db').select('username').from('users_table').where('username', username)
+        //does not exist
+        //(!check) 
 
         bcrypt.hash(new_user.password, 4, function (err, hash) {
             if (err) return next(err)
@@ -93,6 +97,7 @@ UsersRouter
             console.log(data)
         }
         })
+        .catch(next)
     })
 
         // bcrypt.compareSync(password, hash) {
