@@ -5,6 +5,9 @@ const UsersService = {
     getUser(knex, username) {
         return knex.select('username').from('users_table').where('username', username)
     },
+    getPassword(knex, password) {
+        return knex.select('password').from('users_table').where('password', password)
+    },
     seedUserLists(knex, username) {
         //const user_id = knex.select('id').from('users_table').where('username', username)
         return knex.select('*').from('lists_table').where('username', username)

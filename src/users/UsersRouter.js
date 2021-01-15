@@ -64,11 +64,17 @@ UsersRouter
     .route('/api/register')
     .post(bodyParser, (req,res,next) => {
         const { email, username, password } = req.body
-        bcrypt.hash(password, 2)
-        const new_user = { email, username, password}
+        const new_user = { email, username, password }
+
+        bcrypt.hash(new_user.password, 4, function (err, hash) {
+            if (err) return next(err)
+            new_user.password = hash
+           })
+
         UsersService.newUser(req.app.get('db'), new_user)
             .then(data => {
                 res.json(data).status(201)
+                console.log(data)
             })
             .catch(next)
     })
@@ -77,13 +83,25 @@ UsersRouter
     .route('/api/login')
     .post(bodyParser, (req,res,next) => {
         const { username, password } = req.body
-        bcrypt.hash(password, 2)   
+        //if (req.app.get('db').select('*').from('users_table').where('password', password) //&& where('username', username) ) 
+        // === true
+
+        //then return the user via username
+
+        // bcrypt.compareSync(password, hash) {
+        //     // Passwords match
+        //    } else {
+        //     // Passwords don't match
+        //    }) 
+
+        // bcrypt.compareSync(password, hash)
+        
     .then(data => {
         res.json(data)
         console.log(data)
         })
 
-
+    })
 
 
         // const jwtKey = "my_secret_key"
@@ -115,7 +133,7 @@ UsersRouter
         //         res.json(user).status(201)
         //     })
         //     .catch(next)
-})   
+   
 
 
 module.exports = UsersRouter
