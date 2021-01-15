@@ -24,9 +24,8 @@ ItemsRouter
             .catch(next)
     })
     .delete(bodyParser, (req,res,next) => {
-        const { id } = req.body
-        //const item = id  
-        ItemsService.deleteItem(req.app.get('db'), id )
+        const { item_id } = req.body
+        ItemsService.deleteItem(req.app.get('db'), item_id )
         .then(numRowsAffected => {
             res.status(204).end()
         })

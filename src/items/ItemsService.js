@@ -8,8 +8,8 @@ const ItemsService = {
             return rows[0]
         })
     },
-    deleteItem(knex, id) {
-        return knex.select('*').from('items_table').where('id', id).delete()
+    deleteItem(knex, item_id) {
+        return knex.select('*').from('items_table').where('item_id', item_id).delete()
     }
 
 }
