@@ -83,10 +83,12 @@ UsersRouter
     .route('/api/login')
     .post(bodyParser, (req,res,next) => {
         const { username, password } = req.body
-        //if (req.app.get('db').select('*').from('users_table').where('password', password) //&& where('username', username) ) 
-        // === true
-
-        //then return the user via username
+        req.app.get('db').select('username').from('users_table').where('password', password).andWhere('username', username)
+        .then(data => {
+            res.json(data)
+            console.log(data)
+        })
+    })
 
         // bcrypt.compareSync(password, hash) {
         //     // Passwords match
@@ -96,12 +98,7 @@ UsersRouter
 
         // bcrypt.compareSync(password, hash)
         
-    .then(data => {
-        res.json(data)
-        console.log(data)
-        })
-
-    })
+    
 
 
         // const jwtKey = "my_secret_key"
