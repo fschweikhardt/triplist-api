@@ -26,6 +26,10 @@ ListsRouter
     })
     .delete(bodyParser, (req,res,next) => {
         const { id } = req.body
+        console.log(id)
+        // const newId = id.toString()
+        // console.log(newId)
+        //console.log(username)
         ListsService.deleteList(req.app.get('db'), id)
         .then(numRowsAffected => {
             res.status(204).end()
