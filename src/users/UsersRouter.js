@@ -69,6 +69,7 @@ UsersRouter
         bcrypt.hash(new_user.password, 4, function (err, hash) {
             if (err) return next(err)
             new_user.password = hash
+            console.log(new_user)
            })
 
         UsersService.newUser(req.app.get('db'), new_user)
@@ -85,8 +86,12 @@ UsersRouter
         const { username, password } = req.body
         req.app.get('db').select('username').from('users_table').where('password', password).andWhere('username', username)
         .then(data => {
+            if (data === []) {
+              return alert('try again')  
+            } else {
             res.json(data)
             console.log(data)
+        }
         })
     })
 
