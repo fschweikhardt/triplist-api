@@ -5,6 +5,9 @@ const UsersService = {
     getUser(knex, username) {
         return knex.select('username').from('users_table').where('username', username)
     },
+    checkUsername(knex, username) {
+        return knex.select('username').from('users_table').where('username', username)
+    },
     getPassword(knex, password) {
         return knex.select('password').from('users_table').where('password', password)
     },
