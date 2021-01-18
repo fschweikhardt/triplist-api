@@ -59,17 +59,14 @@ UsersRouter
             .catch(next)
 })
 
-
 UsersRouter
     .route('/api/register')
     .post(bodyParser, (req,res,next) => {
         const { email, username, password } = req.body
         const new_user = { email, username, password }
-        console.log(new_user.username)
         //check if username exists
         UsersService.checkUsername(req.app.get('db'), new_user.username )
             .then(username => {
-                console.log(username)
                 if (username.length == 0 || username == undefined) {
                     //bcrypt password
                     bcrypt.hash(new_user.password, 4, function (err, hash) {
@@ -78,14 +75,14 @@ UsersRouter
                         } else {
                             new_user.password = hash
                             console.log(new_user)
-                        }
-                    })
-                    //insert new user here
-                    UsersService.newUser(req.app.get('db'), new_user)
-                        .then(user => {
-                            res.json(user).status(201)
-                            console.log(user)
-                        })
+                            //insert new user here
+                            UsersService.newUser(req.app.get('db'), new_user)
+                                .then(user => {
+                                    res.json(user).status(201)
+                                    console.log(user)
+                                })
+                                }
+                            })
                     //if the username already exists...
                 }  else if (username) {
                         return res.status(404).json({
@@ -94,38 +91,7 @@ UsersRouter
                 }
             })
             .catch(next)
-        
-            // .then(user => {
-            //     res.json(user).status(201)
-            //     console.log(user)
-            // }) 
-            //.catch(next)
         })
-        //  if (check) {
-        //      data => {
-        //          res.json(data)
-        //          console.log(data)
-        //          //res.json(data).status(201).catch(next)
-        //     }  else {
-        //         return console.log('no user')
-        //     }
-        // })
-        //does not exist
-        //(!check) 
-
-        // bcrypt.hash(new_user.password, 4, function (err, hash) {
-        //     if (err) return next(err)
-        //     new_user.password = hash
-        //     console.log(new_user)
-        //    })
-
-        // UsersService.newUser(req.app.get('db'), new_user)
-        //     .then(data => {
-        //         res.json(data).status(201)
-        //         console.log(data)
-        //     })
-        //     .catch(next)
-    //})
 
 UsersRouter
     .route('/api/login')

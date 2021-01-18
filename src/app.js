@@ -11,7 +11,6 @@ const ListsRouter = require('./lists/ListsRouter')
 const ItemsRouter = require('./items/ItemsRouter')
 const UsersRouter = require('./users/UsersRouter')
 
-
 const app = express()
 
 const morganOption = (NODE_ENV === 'production')
@@ -35,17 +34,6 @@ app.use(UsersRouter)
 app.get('/', (req, res) => {
   res.send('Hello, world!')
   })
-  
-// app.use(function errorHandler(error, req, res, next) {
-//   let response = ''
-//   if (NODE_ENV === 'production') {
-//     response = { error: { message: 'server error' } }
-//   } else {
-//     console.error(error)
-//     response = { message: error.message, error }
-//   }
-//   res.status(500).json(response)
-// })
     
 app.use(errorHandler)
 
