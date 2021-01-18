@@ -71,6 +71,15 @@ UsersRouter
             .then(username => {
                 console.log(username)
                 if (username.length == 0 || username == undefined) {
+                    //bcrypt password
+                    bcrypt.hash(new_user.password, 4, function (err, hash) {
+                        if (err) {
+                            return next(err)
+                        } else {
+                            new_user.password = hash
+                            console.log(new_user)
+                        }
+                    })
                     //insert new user here
                     UsersService.newUser(req.app.get('db'), new_user)
                         .then(user => {
