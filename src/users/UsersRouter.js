@@ -79,7 +79,6 @@ UsersRouter
                             UsersService.newUser(req.app.get('db'), new_user)
                                 .then(user => {
                                     res.json(user).status(201)
-                                    console.log(user)
                                 })
                                 }
                             })
@@ -97,25 +96,25 @@ UsersRouter
     .route('/api/login')
     .post(bodyParser, (req,res,next) => {
         const { username, password } = req.body
-        req.app.get('db').select('username').from('users_table').where('password', password).andWhere('username', username)
-        .then(data => {
-            if (data === []) {
-              return alert('try again')  
-            } else {
-            res.json(data)
-            console.log(data)
-        }
-        })
-        .catch(next)
-    })
-
-        // bcrypt.compareSync(password, hash) {
+        //bcrypt compare
+        // bcrypt.compareSync( (password, hash) {
         //     // Passwords match
         //    } else {
         //     // Passwords don't match
         //    }) 
+        
 
-        // bcrypt.compareSync(password, hash)
+        bcrypt.compareSync(password, hash)
+
+        UsersService.checkLogin(req.app.get('db'), username, password)
+        .then(data => {
+            res.json(data)
+            console.log(data)
+        })
+        .catch(next)
+    })
+
+        
         
     
 
