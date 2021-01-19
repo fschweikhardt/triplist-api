@@ -2,6 +2,7 @@ const express = require('express')
 const UsersRouter = express.Router()
 const bodyParser = express.json()
 const UsersService = require('./UsersService')
+const AuthService = require('./AuthService')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 //const logger = require('../logger.js)
@@ -96,27 +97,46 @@ UsersRouter
     .route('/api/login')
     .post(bodyParser, (req,res,next) => {
         const { username, password } = req.body
-        //bcrypt compare
-        // bcrypt.compareSync( (password, hash) {
-        //     // Passwords match
-        //    } else {
-        //     // Passwords don't match
-        //    }) 
-        
+        const login_user = { username, password }
+    //bcrypt and jwt 
+        for (const [key, value] of Object.entries(login_user))
+            if (value === null) 
+                return res.status(400).json({error: `Missing '${key}' in request body`})
+            AuthService.getUsername(req.app.get('db'),login_user.user_name )
+                .then(dbUser => {
+                    if (!dbUser) 
+                        return res.status(400).json({error: 'Incorrect username or password'})
+                    AuthService.comparePasswords(login_user.password, password)
+                        .then(compareMatch => {
+                            res.json(compareMatch)
+                            console.log(compareMatch)
+                        })
 
-        bcrypt.compareSync(password, hash)
-
-        UsersService.checkLogin(req.app.get('db'), username, password)
-        .then(data => {
-            res.json(data)
-            console.log(data)
-        })
-        .catch(next)
+                        // if (!compareMatch)
+                        //     return res.status(400).json({error: 'Incorrect user_name or password',})
+                        // //----JWT
+                        //     const sub = dbUser.user_name
+                        //     const payload = { user_id: dbUser.id }
+                        //     res.send({ authToken: AuthService.createJwt(sub, payload) })
+                        //     })
+                        .catch(next)
+                        })
+                .catch(next)     
     })
-
-        
-        
     
+
+        // try{
+            //     const match = await bcrypt.compare(req.body.password, user.password)
+            //     const accessToken = jwt.sign(JSON.stringify(user), process.env.TOKEN_SECRET)
+            //     if(match){
+            //         res.json({ accessToken: accessToken })
+            //     } else {
+            //         res.json({ message: "Invalid Credentials" })
+            //     }
+            // } catch(e) {
+            //     console.log(e)
+            // }
+        
 
 
         // const jwtKey = "my_secret_key"
