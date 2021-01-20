@@ -98,30 +98,26 @@ UsersRouter
     .post(bodyParser, (req,res,next) => {
         const { username, password } = req.body
         const login_user = { username, password }
-    //bcrypt and jwt 
+    //------> bcrypt and jwt 
         for (const [key, value] of Object.entries(login_user))
             if (value === null) 
                 return res.status(400).json({error: `Missing '${key}' in request body`})
-            AuthService.getUsername(req.app.get('db'),login_user.user_name )
+            AuthService.getUser(req.app.get('db'),login_user.username )
                 .then(dbUser => {
-                    if (!dbUser) 
-                        return res.status(400).json({error: 'Incorrect username or password'})
-                    AuthService.comparePasswords(login_user.password, password)
+                   if (!dbUser) 
+                       return res.status(400).json({error: 'Incorrect username or password'})
+                    return AuthService.comparePasswords(login_user.password, dbUser[0].password)
                         .then(compareMatch => {
-                            res.json(compareMatch)
-                            console.log(compareMatch)
+                            if (!compareMatch)
+                                return res.status(400).json({error: 'Incorrect user_name or password',})
+                        //----> JWT
+                            const sub = dbUser[0].username
+                            const payload = { user_id: dbUser.id }
+                            res.send({ authToken: AuthService.createJwt(sub, payload) })
                         })
-
-                        // if (!compareMatch)
-                        //     return res.status(400).json({error: 'Incorrect user_name or password',})
-                        // //----JWT
-                        //     const sub = dbUser.user_name
-                        //     const payload = { user_id: dbUser.id }
-                        //     res.send({ authToken: AuthService.createJwt(sub, payload) })
-                        //     })
                         .catch(next)
-                        })
-                .catch(next)     
+                       })
+                .catch(next)    
     })
     
 
