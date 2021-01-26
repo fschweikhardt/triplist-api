@@ -97,11 +97,31 @@ UsersRouter
             .catch(next)
 })
 
+const checkToken = (req,res,next) => {
+    const authHeader = req.headers.authorization
+    const token = authHeader && authHeader.split(' ')[1]
+    //console.log('checkToken', token)
+    jwt.verify(token, 'tokensecret', (err, user) => {
+        if (err) return res.sendStatus(403)
+        //console.log('jwt.verify', user)
+        req.user = user
+        next()
+    })
+}
+
 UsersRouter
-    // .route('/api/verifyLists')
-    // .get( middleWare, (req,res,next) => {
-    //     const jsonWebToken = req.headers['Authorization'];
-    // })
+    .route('/api/verifyLists')
+    .get( checkToken, (req,res,next) => {
+        //console.log('.get', req.user.username)
+        const { username } = req.user
+        console.log(username)
+        UsersService.seedUserLists(req.app.get('db'), username)
+            .then (data => {
+                res.json(data)
+                console.log(data)
+            })
+            .catch(next)
+    })
 
 UsersRouter
     .route('/api/register')
@@ -157,8 +177,10 @@ UsersRouter
                                 return res.status(400).json({error: 'Incorrect user_name or password',})
                             const subject = dbUser[0].username
                             const payload = { username: dbUser[0].username }
-                            res.json({ authToken: AuthService.createJwt(subject, payload) })
-                            console.log( payload )
+                            //res.json({ authToken: AuthService.createJwt(subject, payload) })
+                            const token = jwt.sign( payload, 'tokensecret')
+                            res.json({ authToken: token })
+                            console.log( payload, token )
                         })
                         .catch(next)
                         })
