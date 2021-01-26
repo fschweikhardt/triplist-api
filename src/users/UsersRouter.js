@@ -8,6 +8,43 @@ const jwt = require('jsonwebtoken')
 //const logger = require('../logger.js)
 //const xss = require('xss')
 
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization;
+    jwt.verify(token, secret, function (err, decoded) {
+      if (err) {
+        return res.send(401);
+      }
+      console.log(decoded)
+      next();
+    });
+  }
+
+const verifyMiddleware = (req, res, next) => {
+    const jsonWebToken = req.headers['Authorization'];
+    jwt.verify(jsonWebToken, function (err, user) {
+        if(err) {
+          return res.status(401).send('Bad Auth');
+        } else {
+          req.user = user;
+          next();
+        }
+    })
+}
+
+function authenticateToken(req, res, next) {
+    // Gather the jwt access token from the request header
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    if (token == null) return res.sendStatus(401) // if there isn't any token
+  
+    // jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err: any, user: any) => {
+    //   console.log(err)
+    //   if (err) return res.sendStatus(403)
+    //   req.user = user
+    //   next() // pass the execution off to whatever request the client intended
+    // })
+  }
+
 UsersRouter
     .route('/api/users')
     .get( (req,res,next) => {
@@ -61,6 +98,12 @@ UsersRouter
 })
 
 UsersRouter
+    // .route('/api/verifyLists')
+    // .get( middleWare, (req,res,next) => {
+    //     const jsonWebToken = req.headers['Authorization'];
+    // })
+
+UsersRouter
     .route('/api/register')
     .post(bodyParser, (req,res,next) => {
         const { email, username, password } = req.body
@@ -98,25 +141,27 @@ UsersRouter
     .post(bodyParser, (req,res,next) => {
         const { username, password } = req.body
         const login_user = { username, password }
-    //------> bcrypt and jwt 
+    //------> bcrypt
         for (const [key, value] of Object.entries(login_user))
             if (value === null) 
                 return res.status(400).json({error: `Missing '${key}' in request body`})
             AuthService.getUser(req.app.get('db'),login_user.username )
                 .then(dbUser => {
-                   if (!dbUser) 
+                    if (!dbUser) 
                        return res.status(400).json({error: 'Incorrect username or password'})
                     return AuthService.comparePasswords(login_user.password, dbUser[0].password)
+                    //----> JWT
                         .then(compareMatch => {
+                            console.log(dbUser[0].username)
                             if (!compareMatch)
                                 return res.status(400).json({error: 'Incorrect user_name or password',})
-                        //----> JWT
-                            const sub = dbUser[0].username
-                            const payload = { user_id: dbUser.id }
-                            res.send({ authToken: AuthService.createJwt(sub, payload) })
+                            const subject = dbUser[0].username
+                            const payload = { username: dbUser[0].username }
+                            res.json({ authToken: AuthService.createJwt(subject, payload) })
+                            console.log( payload )
                         })
                         .catch(next)
-                       })
+                        })
                 .catch(next)    
     })
     
