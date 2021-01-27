@@ -8,42 +8,42 @@ const jwt = require('jsonwebtoken')
 //const logger = require('../logger.js)
 //const xss = require('xss')
 
-const verifyToken = (req, res, next) => {
-    const token = req.headers.authorization;
-    jwt.verify(token, secret, function (err, decoded) {
-      if (err) {
-        return res.send(401);
-      }
-      console.log(decoded)
-      next();
-    });
-  }
+// const verifyToken = (req, res, next) => {
+//     const token = req.headers.authorization;
+//     jwt.verify(token, secret, function (err, decoded) {
+//       if (err) {
+//         return res.send(401);
+//       }
+//       console.log(decoded)
+//       next();
+//     });
+//   }
 
-const verifyMiddleware = (req, res, next) => {
-    const jsonWebToken = req.headers['Authorization'];
-    jwt.verify(jsonWebToken, function (err, user) {
-        if(err) {
-          return res.status(401).send('Bad Auth');
-        } else {
-          req.user = user;
-          next();
-        }
-    })
-}
+// const verifyMiddleware = (req, res, next) => {
+//     const jsonWebToken = req.headers['Authorization'];
+//     jwt.verify(jsonWebToken, function (err, user) {
+//         if(err) {
+//           return res.status(401).send('Bad Auth');
+//         } else {
+//           req.user = user;
+//           next();
+//         }
+//     })
+// }
 
-function authenticateToken(req, res, next) {
-    // Gather the jwt access token from the request header
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
-    if (token == null) return res.sendStatus(401) // if there isn't any token
+// function authenticateToken(req, res, next) {
+//     // Gather the jwt access token from the request header
+//     const authHeader = req.headers['authorization']
+//     const token = authHeader && authHeader.split(' ')[1]
+//     if (token == null) return res.sendStatus(401) // if there isn't any token
   
-    // jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err: any, user: any) => {
-    //   console.log(err)
-    //   if (err) return res.sendStatus(403)
-    //   req.user = user
-    //   next() // pass the execution off to whatever request the client intended
-    // })
-  }
+//     // jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err: any, user: any) => {
+//     //   console.log(err)
+//     //   if (err) return res.sendStatus(403)
+//     //   req.user = user
+//     //   next() // pass the execution off to whatever request the client intended
+//     // })
+//   }
 
 UsersRouter
     .route('/api/users')
@@ -100,10 +100,8 @@ UsersRouter
 const checkToken = (req,res,next) => {
     const authHeader = req.headers.authorization
     const token = authHeader && authHeader.split(' ')[1]
-    //console.log('checkToken', token)
     jwt.verify(token, 'tokensecret', (err, user) => {
         if (err) return res.sendStatus(403)
-        //console.log('jwt.verify', user)
         req.user = user
         next()
     })
@@ -112,15 +110,9 @@ const checkToken = (req,res,next) => {
 UsersRouter
     .route('/api/verifyId')
     .get( checkToken, (req,res,next) => {
-        //console.log('.get', req.user.username)
         const { username } = req.user
         res.json(username).status(201)
-        // UsersService.seedUserLists(req.app.get('db'), username)
-        //     .then (data => {
-        //         res.json(data).status(201)
-        //         console.log(data)
-        //     })
-        //     .catch(next)
+        next()
     })
 
 UsersRouter
@@ -211,52 +203,5 @@ UsersRouter
                         })
                 .catch(next)    
     })
-    
-
-        // try{
-            //     const match = await bcrypt.compare(req.body.password, user.password)
-            //     const accessToken = jwt.sign(JSON.stringify(user), process.env.TOKEN_SECRET)
-            //     if(match){
-            //         res.json({ accessToken: accessToken })
-            //     } else {
-            //         res.json({ message: "Invalid Credentials" })
-            //     }
-            // } catch(e) {
-            //     console.log(e)
-            // }
-        
-
-
-        // const jwtKey = "my_secret_key"
-        // const jwtExpirySeconds = 300
-
-        // const { username, password } = req.body
-       
-        // if (!username || !password || users[username] !== password) {
-		// // return 401 error is username or password doesn't exist, or if password does
-		// // not match the password in our records
-		// return res.status(401).end()
-    	// }
-
-        // // Create a new token with the username in the payload
-        // // and which expires 300 seconds after issue
-        // const token = jwt.sign({ username }, jwtKey, {
-        //     algorithm: "HS256",
-        //     expiresIn: jwtExpirySeconds,
-        // })
-        // console.log("token:", token)
-        
-        // // set the cookie as the token string, with a similar max age as the token
-        // // here, the max age is in milliseconds, so we multiply by 1000
-        // res.cookie("token", token, { maxAge: jwtExpirySeconds * 1000 })
-        // res.end()
-        // const { username, password } = req.body
-        // UsersService.getUser(req.app.get('db'), username)
-        //     .then(user => {
-        //         res.json(user).status(201)
-        //     })
-        //     .catch(next)
-   
-
 
 module.exports = UsersRouter
