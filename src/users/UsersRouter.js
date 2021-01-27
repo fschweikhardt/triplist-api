@@ -110,18 +110,43 @@ const checkToken = (req,res,next) => {
 }
 
 UsersRouter
+    .route('/api/verifyId')
+    .get( checkToken, (req,res,next) => {
+        //console.log('.get', req.user.username)
+        const { username } = req.user
+        res.json(username).status(201)
+        // UsersService.seedUserLists(req.app.get('db'), username)
+        //     .then (data => {
+        //         res.json(data).status(201)
+        //         console.log(data)
+        //     })
+        //     .catch(next)
+    })
+
+UsersRouter
     .route('/api/verifyLists')
     .get( checkToken, (req,res,next) => {
         //console.log('.get', req.user.username)
         const { username } = req.user
-        console.log(username)
         UsersService.seedUserLists(req.app.get('db'), username)
             .then (data => {
-                res.json(data)
+                res.json(data).status(201)
                 console.log(data)
             })
             .catch(next)
     })
+
+UsersRouter
+    .route('/api/verifyItems')
+    .get( checkToken, (req,res,next) => {
+        const { username } = req.user
+        UsersService.seedUserItems(req.app.get('db'), username)
+            .then(data => {
+                res.json(data).status(201)
+                console.log(data)
+            })
+            .catch(next)
+})
 
 UsersRouter
     .route('/api/register')
