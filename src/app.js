@@ -32,7 +32,7 @@ app.use(ItemsRouter)
 app.use(UsersRouter)
 
 app.get('/', (req, res) => {
-  res.send('Hello, world!')
+  res.send('Hello, TripList!')
   })
     
 app.use(errorHandler)
