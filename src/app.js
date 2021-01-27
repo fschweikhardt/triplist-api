@@ -6,11 +6,10 @@ const { NODE_ENV } = require('./config')
 const errorHandler = require('./error-handler')
 const cors = require('cors');
 const {CLIENT_ORIGIN} = require('./config');
-const validateBearerToken = require('./validate-bearer-token')
+//const validateBearerToken = require('./validate-bearer-token')
 const ListsRouter = require('./lists/ListsRouter')
 const ItemsRouter = require('./items/ItemsRouter')
 const UsersRouter = require('./users/UsersRouter')
-
 
 const app = express()
 
@@ -26,7 +25,7 @@ app.use(
       origin: CLIENT_ORIGIN
   })
 );
-app.use(validateBearerToken)
+//app.use(validateBearerToken)
 
 app.use(ListsRouter)
 app.use(ItemsRouter) 
@@ -35,17 +34,6 @@ app.use(UsersRouter)
 app.get('/', (req, res) => {
   res.send('Hello, world!')
   })
-  
-// app.use(function errorHandler(error, req, res, next) {
-//   let response = ''
-//   if (NODE_ENV === 'production') {
-//     response = { error: { message: 'server error' } }
-//   } else {
-//     console.error(error)
-//     response = { message: error.message, error }
-//   }
-//   res.status(500).json(response)
-// })
     
 app.use(errorHandler)
 
