@@ -7,7 +7,7 @@ const ItemsService = require('./ItemsService')
 
 ItemsRouter
     .route('/api/items')
-    .get( (req,res,next) => {
+    .get((req,res,next) => {
         ItemsService.getAllItems(req.app.get('db'))
             .then(data => {
                 res.json(data)

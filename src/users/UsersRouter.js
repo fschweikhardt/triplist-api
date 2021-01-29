@@ -192,8 +192,8 @@ UsersRouter
                             console.log(dbUser[0].username)
                             if (!compareMatch)
                                 return res.status(400).json({error: 'Incorrect user_name or password',})
-                            const subject = dbUser[0].username
                             const payload = { username: dbUser[0].username }
+                            const subject = dbUser[0].username
                             //res.json({ authToken: AuthService.createJwt(subject, payload) })
                             const token = jwt.sign( payload, 'tokensecret')
                             res.json({ authToken: token })

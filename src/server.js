@@ -9,10 +9,6 @@ const db = knex({
 
 app.set('db', db)
 
-// db.select('username').from('users_table').then(result => {
-//   console.log(result)
-// })
-
 app.listen(PORT, () => {
   console.log(`Server listening at http://localhost:${PORT}`)
 })

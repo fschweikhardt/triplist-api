@@ -1,5 +1,4 @@
 const express = require('express')
-const { Connection } = require('pg')
 const ListsRouter = express.Router()
 const bodyParser = express.json()
 const ListsService = require('./ListsService')
@@ -8,7 +7,7 @@ const ListsService = require('./ListsService')
 
 ListsRouter
     .route('/api/lists')
-    .get( (req,res,next) => {
+    .get((req,res,next) => {
         ListsService.getAllLists(req.app.get('db'))
             .then(data => {
                 res.json(data)
