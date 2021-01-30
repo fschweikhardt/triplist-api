@@ -5,7 +5,8 @@ const UsersService = require('./UsersService')
 const AuthService = require('./AuthService')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-//const logger = require('../logger.js)
+const { JWT_SECRET } = require('../config')
+const logger = require('../logger.js')
 //const xss = require('xss')
 
 // const verifyToken = (req, res, next) => {
@@ -45,62 +46,77 @@ const jwt = require('jsonwebtoken')
 //     // })
 //   }
 
-UsersRouter
-    .route('/api/users')
-    .get( (req,res,next) => {
-        UsersService.getAllUsers(req.app.get('db'))
-            .then(data => {
-                res.json(data)
-            })
-            .catch(next)
-    })
-    .post(bodyParser, (req,res,next) => {
-        const { email, username, password } = req.body
-        const new_user = { email, username, password}
-        UsersService.newUser(req.app.get('db'), new_user)
-            .then(data => {
-                res.json(data).status(201)
-            })
-            .catch(next)
-    })
+// UsersRouter
+//     .route('/api/users')
+//     .get( (req,res,next) => {
+//         UsersService.getAllUsers(req.app.get('db'))
+//             .then(data => {
+//                 if (!data) {
+//                     logger.error('users not found')
+//                     return res.status(404).json({
+//                         error: { message: `Users Not Found` }
+//                     })
+//                 }
+//                 return res.json(data).status(200)
+//             })
+//             .catch(next)
+//     })
+//     .post(bodyParser, (req,res,next) => {
+//         const { email, username, password } = req.body
+//         if (!email || !username || !password) {
+//             logger.error(`no title or username or padssword`)
+//             return res.status(400).res.send('incomplete info')
+//         }
+//         const new_user = { email, username, password}
+//         UsersService.newUser(req.app.get('db'), new_user)
+//             .then(data => {
+//                 logger.info(`POST: ${new_user}`)
+//                 return res.json(data).status(201)
+//             })
+//             .catch(next)
+//     })
   
-UsersRouter
-    .route('/api/user')
-    .post(bodyParser, (req,res,next) => {
-        const { username } = req.body
-        UsersService.getUser(req.app.get('db'), username)
-            .then(user => {
-                res.json(user).status(201)
-            })
-            .catch(next)
-})     
+// UsersRouter
+//     .route('/api/user')
+//     .post(bodyParser, (req,res,next) => {
+//         const { username } = req.body
+//         if (!username) {
+//             logger.error(`no username `)
+//             return res.status(400).res.send('incomplete info')
+//         }
+//         UsersService.getUser(req.app.get('db'), username)
+//             .then(user => {
+//                 return res.json(user).status(201)
+//             })
+//             .catch(next)
+// })     
 
-UsersRouter
-    .route('/api/userLists')
-    .post(bodyParser, (req,res,next) => {
-        const { username } = req.body
-        UsersService.seedUserLists(req.app.get('db'), username)
-            .then(user => {
-                res.json(user).status(201)
-            })
-            .catch(next)
-    })
+// UsersRouter
+//     .route('/api/userLists')
+//     .post(bodyParser, (req,res,next) => {
+//         const { username } = req.body
+//         UsersService.seedUserLists(req.app.get('db'), username)
+//             .then(user => {
+//                 res.json(user).status(201)
+//             })
+//             .catch(next)
+//     })
 
-UsersRouter
-    .route('/api/userItems')
-    .post(bodyParser, (req,res,next) => {
-        const { username } = req.body
-        UsersService.seedUserItems(req.app.get('db'), username)
-            .then(user => {
-                res.json(user).status(201)
-            })
-            .catch(next)
-})
+// UsersRouter
+//     .route('/api/userItems')
+//     .post(bodyParser, (req,res,next) => {
+//         const { username } = req.body
+//         UsersService.seedUserItems(req.app.get('db'), username)
+//             .then(user => {
+//                 res.json(user).status(201)
+//             })
+//             .catch(next)
+// })
 
 const checkToken = (req,res,next) => {
     const authHeader = req.headers.authorization
     const token = authHeader && authHeader.split(' ')[1]
-    jwt.verify(token, 'tokensecret', (err, user) => {
+    jwt.verify(token, JWT_SECRET, (err, user) => {
         if (err) return res.sendStatus(403)
         req.user = user
         next()
@@ -118,7 +134,6 @@ UsersRouter
 UsersRouter
     .route('/api/verifyLists')
     .get( checkToken, (req,res,next) => {
-        //console.log('.get', req.user.username)
         const { username } = req.user
         UsersService.seedUserLists(req.app.get('db'), username)
             .then (data => {
@@ -145,25 +160,17 @@ UsersRouter
     .post(bodyParser, (req,res,next) => {
         const { email, username, password } = req.body
         const new_user = { email, username, password }
-        //check if username exists
         UsersService.checkUsername(req.app.get('db'), new_user.username )
             .then(username => {
                 if (username.length == 0 || username == undefined) {
-                    //bcrypt password
                     bcrypt.hash(new_user.password, 4, function (err, hash) {
-                        if (err) {
-                            return next(err)
-                        } else {
-                            new_user.password = hash
-                            console.log(new_user)
-                            //insert new user here
-                            UsersService.newUser(req.app.get('db'), new_user)
-                                .then(user => {
-                                    res.json(user).status(201)
-                                })
-                                }
+                        if (err) return next(err)
+                        new_user.password = hash
+                        UsersService.newUser(req.app.get('db'), new_user)
+                            .then(user => {
+                                res.json(user).status(201)
                             })
-                    //if the username already exists...
+                        })
                 }  else if (username) {
                         return res.status(404).json({
                             error: { message: `Username already exists` }
@@ -178,7 +185,6 @@ UsersRouter
     .post(bodyParser, (req,res,next) => {
         const { username, password } = req.body
         const login_user = { username, password }
-    //------> bcrypt
         for (const [key, value] of Object.entries(login_user))
             if (value === null) 
                 return res.status(400).json({error: `Missing '${key}' in request body`})
@@ -187,15 +193,13 @@ UsersRouter
                     if (!dbUser) 
                        return res.status(400).json({error: 'Incorrect username or password'})
                     return AuthService.comparePasswords(login_user.password, dbUser[0].password)
-                    //----> JWT
                         .then(compareMatch => {
-                            console.log(dbUser[0].username)
                             if (!compareMatch)
-                                return res.status(400).json({error: 'Incorrect user_name or password',})
+                                return res.status(400).json({error: 'Incorrect username or password',})
                             const payload = { username: dbUser[0].username }
-                            const subject = dbUser[0].username
+                            //const subject = dbUser[0].username
                             //res.json({ authToken: AuthService.createJwt(subject, payload) })
-                            const token = jwt.sign( payload, 'tokensecret')
+                            const token = jwt.sign( payload, JWT_SECRET )
                             res.json({ authToken: token })
                             console.log( payload, token )
                         })
