@@ -2,7 +2,7 @@ const express = require('express')
 const ListsRouter = express.Router()
 const bodyParser = express.json()
 const ListsService = require('./ListsService')
-//const logger = require('../logger.js)
+const logger = require('../logger.js')
 //const xss = require('xss')
 
 ListsRouter
@@ -10,28 +10,40 @@ ListsRouter
     .get((req,res,next) => {
         ListsService.getAllLists(req.app.get('db'))
             .then(data => {
-                res.json(data)
+                if (!data) {
+                    logger.error('no lists')
+                    return res.status(404).json({
+                        error: { message: `Lists Not Found` }
+                    })
+                }
+                return res.json(data).status(200)
             })
             .catch(next)
     })
     .post(bodyParser, (req,res,next) => {
         const { title, username } = req.body
+        if (!title || !username) {
+            logger.error(`no title or username`)
+            return res.status(400).res.send('incomplete info')
+        }
         const newList = { title, username }
         ListsService.addList(req.app.get('db'), newList)
             .then(data => {
-                res.json(data).status(201)
+                logger.info(`POST: ${newList}`)
+                return res.json(data).status(201)
             })
             .catch(next)
     })
     .delete(bodyParser, (req,res,next) => {
         const { id } = req.body
-        console.log(id)
-        // const newId = id.toString()
-        // console.log(newId)
-        //console.log(username)
+        if (!id) {
+            logger.error('no listId')
+            return res.status(400).res.send('incomplete info')
+        }
         ListsService.deleteList(req.app.get('db'), id)
         .then(numRowsAffected => {
-            res.status(204).end()
+            logger.info(`list ${id} deleted`)
+            return res.status(204).end()
         })
         .catch(next)
     })
