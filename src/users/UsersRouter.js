@@ -131,6 +131,7 @@ UsersRouter
                         new_user.password = hash
                         UsersService.newUser(req.app.get('db'), new_user)
                             .then(user => {
+                                logger.info(`${new_user.username} registered`)
                                 res.json(user).status(201)
                             })
                         })
@@ -149,21 +150,28 @@ UsersRouter
         const { username, password } = req.body
         const login_user = { username, password }
         for (const [key, value] of Object.entries(login_user))
-            if (value === null) 
+            if (value === null) {
+                logger.error('missing username or password')
                 return res.status(400).json({error: `Missing '${key}' in request body`})
+            }
             AuthService.getUser(req.app.get('db'),login_user.username )
                 .then(dbUser => {
-                    if (!dbUser) 
-                       return res.status(400).json({error: 'Incorrect username or password'})
+                    if (!dbUser) {
+                        logger.error('incorrect username or password')
+                        return res.status(400).json({error: 'Incorrect username or password'})
+                    }
                     return AuthService.comparePasswords(login_user.password, dbUser[0].password)
                         .then(compareMatch => {
-                            if (!compareMatch)
+                            if (!compareMatch) {
+                                logger.error('incorrect username or password')
                                 return res.status(400).json({error: 'Incorrect username or password',})
+                            }
                             const payload = { username: dbUser[0].username }
                             //const subject = dbUser[0].username
                             //res.json({ authToken: AuthService.createJwt(subject, payload) })
                             const token = jwt.sign( payload, JWT_SECRET )
                             res.json({ authToken: token })
+                            logger.info(`${payload.username} logged in`)
                             console.log( payload, token )
                         })
                         .catch(next)
