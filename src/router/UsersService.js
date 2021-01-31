@@ -36,7 +36,7 @@ const UsersService = {
     },
     addItem(knex, newItem, username) {
         return knex.insert(newItem).into('items_table').where('lists_table.username', username)
-            .join('lists_table', 'items_table.list_id', '=', 'lists_table.id')
+            .join('lists_table', 'items_table.list_id', '=', 'lists_table.id').returning('*')
         .then(rows => {
             return rows[0]
         })

@@ -161,7 +161,7 @@ UsersRouter
         const newItem = { name, list_id }
         UsersService.addItem(req.app.get('db'), newItem, username)
             .then(data => {
-                logger.info(`new item: ${newItem.name} w/ listId: ${newItem.list_id}`)
+                logger.info(`${username} new item: ${newItem.name} w/ listId: ${newItem.list_id}`)
                 return res.json(data).status(201)
             })
             .catch(next)
