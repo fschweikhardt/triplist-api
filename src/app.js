@@ -7,9 +7,7 @@ const { NODE_ENV } = require('./config')
 const {CLIENT_ORIGIN} = require('./config');
 const errorHandler = require('./error-handler')
 //const validateBearerToken = require('./validate-bearer-token')
-const ListsRouter = require('./lists/ListsRouter')
-const ItemsRouter = require('./items/ItemsRouter')
-const UsersRouter = require('./users/UsersRouter')
+const UsersRouter = require('./router/UsersRouter')
 
 const app = express()
 
@@ -26,9 +24,7 @@ app.use(
   })
 );
 //app.use(validateBearerToken)
-
-app.use(ListsRouter)
-app.use(ItemsRouter) 
+ 
 app.use(UsersRouter)
 
 app.get('/', (req, res) => {
