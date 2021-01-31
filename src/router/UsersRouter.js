@@ -94,7 +94,6 @@ UsersRouter
         UsersService.seedUserLists(req.app.get('db'), username)
             .then(data => {
                 res.json(data).status(201)
-                console.log(data)
             })
             .catch(next)
     })
@@ -106,7 +105,6 @@ UsersRouter
         UsersService.seedUserItems(req.app.get('db'), username)
             .then(data => {
                 res.json(data).status(201)
-                console.log(data)
             })
             .catch(next)
 })
@@ -177,8 +175,6 @@ UsersRouter
         }
         UsersService.deleteItemVerify(req.app.get('db'), item_id)
             .then(data => {
-                console.log(data)
-                console.log(data[0].username)
                 if (data[0].username !== username) {
                     return res.status(404).send('no access')
                 }
