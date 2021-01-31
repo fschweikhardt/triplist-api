@@ -155,13 +155,13 @@ UsersRouter
     .route('/api/items')
     .post(checkToken, bodyParser, (req,res,next) => {
         const { name, list_id } = req.body
-        //const { username } = req.user
+        const { username } = req.user
         if (!name || !list_id) {
             logger.error('no name or list_id on items POST')
             return res.status(400).send('incomplete info')
         }
         const newItem = { name, list_id }
-        UsersService.addItem(req.app.get('db'), newItem)
+        UsersService.addItem(req.app.get('db'), newItem, username)
             .then(data => {
                 logger.info(`new item: ${newItem.name} w/ listId: ${newItem.list_id}`)
                 return res.json(data).status(201)
@@ -170,15 +170,24 @@ UsersRouter
     })
     .delete(checkToken, bodyParser, (req,res,next) => {
         const { item_id } = req.body
-        //const { username } = req.user
+        const { username } = req.user
         if (!item_id) {
             logger.error('no item_id on items DELETE')
             return res.status(400).send('incomplete info')
         }
-        UsersService.deleteItem(req.app.get('db'), item_id )
-            .then(numRowsAffected => {
-                logger.info(`item ${item_id} deleted`)
-                return res.status(204).end()
+        UsersService.deleteItemVerify(req.app.get('db'), item_id)
+            .then(data => {
+                console.log(data)
+                console.log(data[0].username)
+                if (data[0].username !== username) {
+                    return res.status(404).send('no access')
+                }
+                UsersService.deleteItemFinish(req.app.get('db'), item_id)
+                    .then(numRowsAffected => {
+                        logger.info(`DELETED: item ${item_id}`)
+                        return res.status(204).end()
+                    })
+                    .catch(next)
             })
             .catch(next)
     })

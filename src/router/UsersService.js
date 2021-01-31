@@ -14,7 +14,8 @@ const UsersService = {
         return knex.select('*').from('lists_table').where('username', username)
     },
     seedUserItems(knex, username) {
-        return knex.select('*').from('items_table').where('lists_table.username', username).join('lists_table', 'items_table.list_id', '=', 'lists_table.id')
+        return knex.select('*').from('items_table').where('lists_table.username', username)
+        .join('lists_table', 'items_table.list_id', '=', 'lists_table.id')
     },
     newUser(knex, new_user) {
         return knex.insert(new_user).into('users_table').returning('*').then(rows => {
@@ -33,13 +34,19 @@ const UsersService = {
     deleteList(knex, id, username) {
         return knex.select('*').from('lists_table').where('id', id).andWhere('username', username).delete()
     },
-    addItem(knex, newItem) {
-        return knex.insert(newItem).into('items_table').returning('*')
+    addItem(knex, newItem, username) {
+        return knex.insert(newItem).into('items_table').where('lists_table.username', username)
+            .join('lists_table', 'items_table.list_id', '=', 'lists_table.id')
         .then(rows => {
             return rows[0]
         })
     },
-    deleteItem(knex, item_id) {
+    deleteItemVerify(knex, item_id) {
+        return knex.select('*').from('items_table').where('item_id', item_id)
+        .join('lists_table', 'items_table.list_id', '=', 'lists_table.id')
+        .returning('*')
+    },
+    deleteItemFinish(knex, item_id) {
         return knex.select('*').from('items_table').where('item_id', item_id).delete()
     }
 }
