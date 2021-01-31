@@ -2,7 +2,7 @@ const express = require('express')
 const UsersRouter = express.Router()
 const bodyParser = express.json()
 const UsersService = require('./UsersService')
-const AuthService = require('./AuthService')
+//const AuthService = require('./AuthService')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = require('../config')
@@ -87,6 +87,78 @@ const checkToken = (req,res,next) => {
 }
 
 UsersRouter
+    .route('/api/lists')
+    .post(checkToken, bodyParser, (req,res,next) => {
+        const { title } = req.body
+        const { username } = req.user
+        if (!username) {
+            logger.error('user not verified')
+            res.status(400).res.send('try again')
+        }
+        if (!title) {
+            logger.error(`no title`)
+            return res.status(400).res.send('incomplete info')
+        }
+        const newList = { title, username }
+        UsersService.addList(req.app.get('db'), newList)
+            .then(data => {
+                logger.info(`POST: ${newList.username}  ${newList.title}`)
+                return res.json(data).status(201)
+            })
+            .catch(next)
+    })
+    .delete(checkToken, bodyParser, (req,res,next) => {
+        const { id } = req.body
+        const { username } = req.user
+        if (!username) {
+            logger.error('user not verified')
+            res.status(400).res.send('try again')
+        }
+        if (!id) {
+            logger.error('no listId')
+            return res.status(400).res.send('incomplete info')
+        }
+        UsersService.deleteList(req.app.get('db'), id, username)
+            .then(numRowsAffected => {
+                logger.info(`DELETED: list ${id}`)
+                return res.status(204).end()
+            })
+            .catch(next)
+    })
+
+UsersRouter
+    .route('/api/items')
+    .post(checkToken, bodyParser, (req,res,next) => {
+        const { name, list_id } = req.body
+        //const { username } = req.user
+        if (!name || !list_id) {
+            logger.error('no name or list_id on items POST')
+            return res.status(400).send('incomplete info')
+        }
+        const newItem = { name, list_id }
+        UsersService.addItem(req.app.get('db'), newItem)
+            .then(data => {
+                logger.info(`new item: ${newItem.name} w/ listId: ${newItem.list_id}`)
+                return res.json(data).status(201)
+            })
+            .catch(next)
+    })
+    .delete(checkToken, bodyParser, (req,res,next) => {
+        const { item_id } = req.body
+        //const { username } = req.user
+        if (!item_id) {
+            logger.error('no item_id on items DELETE')
+            return res.status(400).send('incomplete info')
+        }
+        UsersService.deleteItem(req.app.get('db'), item_id )
+            .then(numRowsAffected => {
+                logger.info(`item ${item_id} deleted`)
+                return res.status(204).end()
+            })
+            .catch(next)
+    })
+
+UsersRouter
     .route('/api/verifyId')
     .get( checkToken, (req,res,next) => {
         const { username } = req.user
@@ -99,7 +171,7 @@ UsersRouter
     .get( checkToken, (req,res,next) => {
         const { username } = req.user
         UsersService.seedUserLists(req.app.get('db'), username)
-            .then (data => {
+            .then(data => {
                 res.json(data).status(201)
                 console.log(data)
             })
@@ -154,13 +226,13 @@ UsersRouter
                 logger.error('missing username or password')
                 return res.status(400).json({error: `Missing '${key}' in request body`})
             }
-            AuthService.getUser(req.app.get('db'),login_user.username )
+            UsersService.getUser(req.app.get('db'),login_user.username )
                 .then(dbUser => {
                     if (!dbUser) {
                         logger.error('incorrect username or password')
                         return res.status(400).json({error: 'Incorrect username or password'})
                     }
-                    return AuthService.comparePasswords(login_user.password, dbUser[0].password)
+                    return UsersService.comparePasswords(login_user.password, dbUser[0].password)
                         .then(compareMatch => {
                             if (!compareMatch) {
                                 logger.error('incorrect username or password')

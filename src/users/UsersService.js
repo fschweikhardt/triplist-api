@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs')
+
 const UsersService = {
     getAllUsers(knex) {
         return knex.select('*').from('users_table')
@@ -17,6 +19,9 @@ const UsersService = {
     checkPassword(knex, username, password) {
         return knex.select('password').from('users_table').where('password', password).andWhere('username', username)
     },
+    comparePasswords(password, hash) {
+        return bcrypt.compare(password, hash)
+    },
     seedUserLists(knex, username) {
         return knex.select('*').from('lists_table').where('username', username)
     },
@@ -27,8 +32,28 @@ const UsersService = {
         return knex.insert(new_user).into('users_table').returning('*').then(rows => {
             return rows[0]
         })
+    },
+    getUser(knex, username) {
+        return knex.select('*').from('users_table').where('username', username)
+    },
+    addList(knex, newList) {
+        return knex.insert(newList).into('lists_table').returning('*')
+        .then(rows => {
+            return rows[0]
+        })
+    },
+    deleteList(knex, id, username) {
+        return knex.select('*').from('lists_table').where('id', id).andWhere('username', username).delete()
+    },
+    addItem(knex, newItem) {
+        return knex.insert(newItem).into('items_table').returning('*')
+        .then(rows => {
+            return rows[0]
+        })
+    },
+    deleteItem(knex, item_id) {
+        return knex.select('*').from('items_table').where('item_id', item_id).delete()
     }
-
 }
 
 module.exports = UsersService

@@ -6,7 +6,7 @@ const logger = require('../logger.js')
 //const xss = require('xss')
 
 ItemsRouter
-    .route('/api/items')
+    .route('/api/itemsz')
     .get((req,res,next) => {
         ItemsService.getAllItems(req.app.get('db'))
             .then(data => {

@@ -6,7 +6,7 @@ const logger = require('../logger.js')
 //const xss = require('xss')
 
 ListsRouter
-    .route('/api/lists')
+    .route('/api/listsz')
     .get((req,res,next) => {
         ListsService.getAllLists(req.app.get('db'))
             .then(data => {
