@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { JWT_SECRET } = require('../config')
 const logger = require('../logger.js')
-//const xss = require('xss')
 
 const checkToken = (req,res,next) => {
     const authHeader = req.headers.authorization
@@ -67,8 +66,6 @@ UsersRouter
                                 return res.status(400).json({error: 'Incorrect username or password',})
                             }
                             const payload = { username: dbUser[0].username }
-                            //const subject = dbUser[0].username
-                            //res.json({ authToken: AuthService.createJwt(subject, payload) })
                             const token = jwt.sign( payload, JWT_SECRET )
                             res.json({ authToken: token })
                             logger.info(`${payload.username} logged in`)
