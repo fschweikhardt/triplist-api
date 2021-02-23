@@ -86,7 +86,7 @@ UsersRouter
     .route('/api/verifyId')
     .get( checkToken, (req,res,next) => {
         const { username } = req.user
-        res.json(username).status(201)
+        res.json(username).status(200)
         next()
     })
 
@@ -96,7 +96,7 @@ UsersRouter
         const { username } = req.user
         UsersService.seedUserLists(req.app.get('db'), username)
             .then(data => {
-                res.json(data).status(201)
+                res.json(data).status(200)
             })
             .catch(next)
     })
@@ -107,7 +107,7 @@ UsersRouter
         const { username } = req.user
         UsersService.seedUserItems(req.app.get('db'), username)
             .then(data => {
-                res.json(data).status(201)
+                res.json(data).status(200)
             })
             .catch(next)
 })
