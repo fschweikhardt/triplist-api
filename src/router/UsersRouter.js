@@ -18,6 +18,12 @@ const checkToken = (req,res,next) => {
 }
 
 UsersRouter
+    .route('/api/test')
+    .get(bodyParser, (req,res,next) => {
+        res.send("working").status(200)
+    })
+
+UsersRouter
     .route('/api/register')
     .post(bodyParser, (req,res,next) => {
         const { email, username, password } = req.body
@@ -57,17 +63,17 @@ UsersRouter
                 .then(dbUser => {
                     if (!dbUser) {
                         logger.error('incorrect username or password')
-                        return res.status(400).json({error: 'Incorrect username or password'})
+                        return res.status(401).json({error: 'Incorrect username or password'})
                     }
                     return UsersService.comparePasswords(login_user.password, dbUser[0].password)
                         .then(compareMatch => {
                             if (!compareMatch) {
                                 logger.error('incorrect username or password')
-                                return res.status(400).json({error: 'Incorrect username or password',})
+                                return res.status(401).json({error: 'Incorrect username or password',})
                             }
                             const payload = { username: dbUser[0].username }
                             const token = jwt.sign( payload, JWT_SECRET )
-                            res.json({ authToken: token })
+                            res.json({ authToken: token }).status(200)
                             logger.info(`${payload.username} logged in`)
                             console.log( payload, token )
                         })

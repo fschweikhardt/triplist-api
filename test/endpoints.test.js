@@ -1,19 +1,49 @@
-const supertest = require('supertest');
-// const { request } = require('../src/app');
+const supertest = require('supertest')
 const app = require('../src/app')
 
 describe('GET /', () => {
     it('respond with Hello, TripList!', () => {
         return supertest(app)
             .get('/')
-            .set('Accept', 'application/json')
-            .expect(200, 'Hello, TripList!');
-    });
-});
+            .expect('Hello, TripList!')
+            .expect(200);
+    })
+    it('respond 404', () => {
+        return supertest(app)
+            .get('/err')
+            .expect(404)
+    })
+    it('should respond working', () => {
+        return supertest(app)
+            .get('/api/test')
+            .expect(200, 'working')
+    })
+})
 
-let token = ''
+describe('POST /api/login', () => {
+    it('should respond with JWT token', () => {
+        return supertest(app)
+            .post('/api/login')
+            .send({
+                "username": "demo",
+                "password": "demo"
+            })
+            .expect(200)
+    })
+    it('should fail with incorrect password', () => {
+        return supertest(app)
+            .post('/api/login')
+            .send({
+                "username": "demo",
+                "password": "bad password"
+            })
+            .expect(401)
+    })
+})
 
-// beforeAll( done => { 
+// let token = ''
+
+// before( done => { 
 //     return supertest(app) 
 //         .post('/login')
 //         .send({
@@ -26,4 +56,4 @@ let token = ''
 //         })
 // })
 
-console.log('demo token', token)
+// console.log('log demo token:', token)
