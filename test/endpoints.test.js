@@ -20,25 +20,17 @@ describe('GET /', () => {
     })
 })
 
-describe('POST /api/login', () => {
+describe.skip('POST /api/login', () => {
     it('should respond with JWT token', () => {
         return supertest(app)
             .post('/api/login')
             .send({
-                "username": "demo",
-                "password": "demo"
+                username: "demo",
+                password: "demo"
             })
             .expect(200)
     })
-
-
-    // UsersRouter
-    // .route('/api/login')
-    // .post(bodyParser, (req,res,next) => {
-    //     const { username, password } = req.body
-    // ...etc...
-
-    it.only('should fail with incorrect password', () => {
+    it('should fail with incorrect password', () => {
         return supertest(app)
             .post('/api/login')
             .send({
@@ -71,29 +63,15 @@ describe('GET /api/verify routes', () => {
     })
 })
 
-describe('users lists', () => {
+describe.skip('users lists', () => {
     let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRlbW8iLCJpYXQiOjE2MTQwOTY3Mzh9.M6eWaIVMMsBSwa1zS6ySNx56aZks-OiBQiRnDVD6AYA'
     it('POST adds list', () => {
         return supertest(app)
-            .get('/api/lists')
+            .post('/api/lists')
             .set('Authorization', 'Bearer ' + token)
-            .send({"title": "new list"})
+            .send({
+                title: "new list"
+            })
             .expect(201)
     })
 })
-
-
-// before( done => { 
-//     return supertest(app) 
-//         .post('/login')
-//         .send({
-//             username: 'demo',
-//             password: 'demo'
-//         })
-//         .end((err, response) => {
-//             token = response.body.token
-//             done()  
-//         })
-// })
-
-// console.log('log demo token:', token)
