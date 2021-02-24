@@ -20,7 +20,7 @@ describe('GET /', () => {
     })
 })
 
-describe.skip('POST /api/login', () => {
+describe.skip('POST login', () => {
     it('should respond with JWT token', () => {
         return supertest(app)
             .post('/api/login')
