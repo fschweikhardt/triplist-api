@@ -1,15 +1,30 @@
 # TripList API
 
-## Set up
+https://triplist-app.vercel.app/
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+## Description
+
+TripList is a place to store all of your trip ideas in one place. Create different lists for your different trips. 
+
+The backend includes error handeling and logging, brcypt encryption, and JWT authentication.
+
+## Technology Used
+
+This is a fullstack app using React, CSS, Node, Express, and PostgreSQL.
+
+## ENDPOINTS
+
+The backend allows users to create an account and store their lists and items in the database. 
+
+/register - Uses bcrypt to encrypt the uses password in the database. 
+
+/login - Creates a JWT token at login for authentication. 
+
+/verifyId, /verifyLists, /verifyItems - Uses JWT to seed the content when a user logs in. 
+
+/lists, /items - These are used to add and delete content.
 
 ## Scripts
 
@@ -21,4 +36,4 @@ Run the tests `npm test`
 
 ## Deploying
 
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's main branch.
+Backend was deployed to Heroku.
