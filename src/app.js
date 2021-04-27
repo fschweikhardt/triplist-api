@@ -6,7 +6,6 @@ const cors = require('cors')
 const { NODE_ENV } = require('./config')
 const {CLIENT_ORIGIN} = require('./config');
 const errorHandler = require('./error-handler')
-//const validateBearerToken = require('./validate-bearer-token')
 const UsersRouter = require('./router/UsersRouter')
 
 const app = express()
@@ -23,9 +22,8 @@ app.use(
       origin: CLIENT_ORIGIN
   })
 );
-//app.use(validateBearerToken)
  
-app.use(UsersRouter)
+app.use('/api', UsersRouter)
 
 app.get('/', (req, res) => {
   res.send('Hello, TripList!')
