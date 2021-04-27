@@ -1,7 +1,7 @@
 {
   "name": "triplist-api",
-  "version": "1.0.0",
-  "description": "",
+  "version": "3.0.0",
+  "description": "TripList API",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/endpoints.test.js",
@@ -14,9 +14,6 @@
     "deploy": "git push heroku main"
   },
   "keywords": [],
-  "engines": {
-    "node": "12.19.0"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -26,7 +23,7 @@
     "express": "^4.17.1",
     "helmet": "^4.2.0",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.21.15",
+    "knex": "^0.95.4",
     "morgan": "^1.10.0",
     "node": "^15.4.0",
     "pg": "^8.5.1",
