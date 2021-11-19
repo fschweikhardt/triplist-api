@@ -126,7 +126,7 @@ UsersRouter
     .route('/verifyLists')
     .get(checkToken, (req,res,next) => {
         const { username } = req.user
-        console.log('V-list', username)
+        console.log('V-lists', username)
         UsersService.seedUserLists(req.app.get('db'), username)
             .then(data => {
                 console.log(data)
@@ -145,8 +145,10 @@ UsersRouter
     .route('/verifyItems')
     .get( checkToken, (req,res,next) => {
         const { username } = req.user
+        console.log('V-items', username)
         UsersService.seedUserItems(req.app.get('db'), username)
             .then(data => {
+                console.log(data)
                 res.status(200).json(data)
             })
             .catch(next)
@@ -221,7 +223,7 @@ UsersRouter
                         error: 'no access'
                     })
                 }
-                return returnUsersService.deleteItemFinish(req.app.get('db'), item_id)
+                return UsersService.deleteItemFinish(req.app.get('db'), item_id)
                     .then(numRowsAffected => {
                         logger.info(`DELETED: item ${item_id}`)
                         return res.status(204).end()
